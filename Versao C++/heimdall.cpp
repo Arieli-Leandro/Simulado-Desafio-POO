@@ -1,10 +1,24 @@
+// Bloco de notas de -A -> Fazer tds os getters e setters e dps eu vejo oq eu faço no resto -> Básico -> Médio -> Finaliza
+
 #include <iostream>
 #include <string>
 #include <chrono>
 #include <vector>
 using namespace std;
+/*
+-> Estrutura Base
+-> Construtores e Destrutores
+-> Getters e Setters
+-> Interfaces
+-> Métodos de Herança e Polimorfos
+-> Funcionamento geral (LINKAR AS COISAS [via main? (talvez)])
+-> Aplicações
+
+*/
 
 
+
+//getters e setter finalizado
 class Usuario{
 
     protected:
@@ -15,13 +29,76 @@ class Usuario{
         bool ativo;
 
     public:
+
+        //finalizar o construtor e destrutor dps
+        Usuario(){
+
+        }
+
+        ~Usuario(){
+
+        }
+
+        //Metodos setter's
+        void setId(long valor){
+            this->id = valor;
+            return;
+        }
+
+        void setNome(string valor_nome){
+            this->nome = valor_nome;
+            return;
+        }
+
+        void setMatricula(int valor_ma){
+            this->matricula = valor_ma;
+            return;
+        }
+
+        void setEmail(string valor_email){
+            this->email = valor_email;
+            return;
+        }
+
+        void setAtivo(bool valor_ativo){
+            this->ativo = valor_ativo;
+            return;
+        }
+
+        //Metodos getter's
+        long getId(){
+            return id;
+        }
+
+        string getNome(){
+            return nome;
+        }
+
+        int getMatricula(){
+            return matricula;
+        }
+
+        string getEmail(){
+            return email;
+        }
+
+        bool getAtivo(){
+            return ativo;
+        }
+
+
+
         bool autenticar(){
 
-            if(ativo == false){
-                ativo = true;
+            //Estou interpretando ativo como se o Usuário esteja empregado ou não na empresa. -> Se ativo: tem acesso -> Se não: não tem acesso
+
+            bool retorno = false;
+
+            if(ativo == true){
+                retorno = true;
             }
 
-            return ativo;
+            return retorno;
 
         };
 
@@ -35,24 +112,49 @@ class Usuario{
 
 class Professor: public Usuario{
 
-    //unico método é o override de podeRetirar()
-    int prazoHoras() override {
+    public:
 
-        return 24;
+        //finalizar dps o construtor e o destrutor ->Chamar o super
+        Professor(){
 
-    }
+
+        }
+
+        ~Professor(){
+
+        }
+
+        //unico método é o override de podeRetirar()
+        int prazoHoras() override {
+
+            return 24;
+
+        }
 
 
 };
 
 class Tecnico: public Usuario{
 
-    //unico método é o override de podeRetirar()
-    int prazoHoras() override {
+    public:
 
-        return 8;
+        //finalizar dps->Chamar o super
+        Tecnico(){
 
-    }
+
+        }
+
+        ~Tecnico(){
+
+
+        }
+
+        //unico método é o override de podeRetirar()
+        int prazoHoras() override {
+
+            return 8;
+
+        }
 
 
 };
@@ -60,6 +162,18 @@ class Tecnico: public Usuario{
 class Administrador: public Usuario{
 
     public:
+
+        //finalizar dps -> Chamar o super
+        Administrador(){
+
+
+        }
+
+        ~Administrador(){
+
+
+        }
+
         bool podeRetirar(){
 
         }
@@ -87,7 +201,7 @@ class Chave{
         long id;
         string codigo;
         StatusChave status;
-        Ambiente ambiente;
+        Ambiente *ambiente;
 
         //fiz no private porque não é interessante acessar o menu por fora
         int menu(){
@@ -95,6 +209,18 @@ class Chave{
         }
 
     public:
+
+        //finalizar dps -> DESALOCA NO DESTRUTOR
+        Chave(){
+
+
+        }
+
+        ~Chave(){
+
+
+        }
+        
         bool disponivel(){
 
             bool retorno;
@@ -199,8 +325,8 @@ long geradorId(int cod_id, long registros[]){
 
 }
 
-
-class Ambiente{
+//getter e setter finalizado
+class Ambiente final{
     //não temos métodos em ambiente
     private:
         long id;
@@ -209,21 +335,35 @@ class Ambiente{
         string descricao;
     public:
 
+        //Finalizar dps
+        Ambiente(){
+
+        }
+
+        ~Ambiente(){
+            //ambiente nn tem ponteiro, ent nn precisa desalocar
+
+        }
+
         //Métodos setters
         void setId(long valor){
             this->id = valor;
+            return;
         }
 
         void setNome(string valor_nome){
             this->nome = valor_nome;
+            return;
         }
 
         void setBloco(string valor_bloco){
             this->bloco = valor_bloco;
+            return;
         }
 
         void setDescricao(string valor_descricao){
             this->descricao = valor_descricao;
+            return;
         }
 
         //Métodos getters
@@ -243,15 +383,6 @@ class Ambiente{
             return descricao;
         }
 
-    
-        Ambiente(){
-
-        }
-
-        ~Ambiente(){
-            //ambiente nn tem ponteiro, ent nn precisa desalocar
-
-        }
 
 };
 
@@ -266,6 +397,18 @@ class Emprestimo{
         std::chrono::system_clock::time_point dataDevolucao;
         string justificativa;
     public:
+
+        //finalizar dps -> DESTRUTOR VAI TER Q DESALOCAR PONTEIRO
+        Emprestimo(){
+
+
+        }
+
+        ~Emprestimo(){
+
+
+        }
+
         void encerrarEmprestimo(){
 
         }
@@ -283,9 +426,8 @@ class Emprestimo{
 int main(){
 
     //inicializa o vetor
-
-    //isso não pode ficar aqui -> Ir pra main ou ir pra global?
-    vector <long> registros = incializaVetorRegistros();
+    //[isso não pode ficar aqui -> Ir pra main ou ir pra global?]
+    vector <long> registros = incializaVetorRegistros(); // dps tenho q garatir que isso rode apenas 1 vez e dps nunca mais ao longo do código em execução,
     /* -> Primeira posição do vetor Referente á Usuarios
        -> Segunda posição do vetor Referente á Emprestimo
        -> Terceira posição do vetor Referente á Chave
