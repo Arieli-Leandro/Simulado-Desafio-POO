@@ -91,7 +91,6 @@ class Usuario{
         bool autenticar(){
 
             //Estou interpretando ativo como se o Usuário esteja empregado ou não na empresa. -> Se ativo: tem acesso -> Se não: não tem acesso
-
             bool retorno = false;
 
             if(ativo == true){
@@ -110,6 +109,8 @@ class Usuario{
 
 };
 
+
+//getters e setters vão vir por padrão no classe Mãe
 class Professor: public Usuario{
 
     public:
@@ -134,6 +135,8 @@ class Professor: public Usuario{
 
 };
 
+
+//getters e setters vão vir por padrão na classe Mãe
 class Tecnico: public Usuario{
 
     public:
@@ -159,6 +162,7 @@ class Tecnico: public Usuario{
 
 };
 
+//getters e setter vão vir por padrão na classe Mãe
 class Administrador: public Usuario{
 
     public:
@@ -195,6 +199,7 @@ enum StatusChave {
     EM_ATRASO
 };
 
+//getter e setters finalizados (verificar dps se o ponteiro tá para o lugar correto)
 class Chave{
 
     private:
@@ -219,6 +224,43 @@ class Chave{
         ~Chave(){
 
 
+        }
+
+        //métodos getters
+        long getId(){
+            return id;
+        }
+
+        string getCodigo(){
+            return codigo;
+        }
+
+        StatusChave getStatus(){
+            return status;
+        }
+
+        Ambiente *getAmbiente(){
+            return ambiente;
+        }
+
+        //métodos setters
+        void setId(long valor){
+            this->id = valor;
+            return;
+        }
+
+        void setCodigo(string valor){
+            this->codigo = valor;
+            return;
+        }
+
+        void setStatusCodigo(StatusChave status_valor){
+            this->status = status_valor;
+            return;
+        }
+
+        void setAmbiente(Ambiente *valor_ambiente){
+            this->ambiente = valor_ambiente;
         }
         
         bool disponivel(){
@@ -386,6 +428,7 @@ class Ambiente final{
 
 };
 
+//métodos getters e setter quase finalizados, falta ver a sintaxe da chrono
 class Emprestimo{
 
     private:
@@ -407,6 +450,50 @@ class Emprestimo{
         ~Emprestimo(){
 
 
+        }
+
+        //Métodos getters
+        long getId(){
+            return id;
+        }
+
+        Usuario *getUsuario(){
+            return usuario;
+        }
+
+        Chave *getChave(){
+            return chave;
+        }
+
+        //-> getters do chrono (ver a sintaxe no docs da chrono.h cpp)
+
+        string getJustificativa(){
+            return justificativa;
+        }
+
+
+
+        //Métodos setters
+        void setId(long valor){
+            this->id = valor;
+            return;
+        }
+
+        void setUsuario(Usuario *usuario_valor){
+            this->usuario = usuario_valor;
+            return;
+        }
+
+        void setChave(Chave *chave_valor){
+            this->chave = chave_valor;
+            return;
+        }
+
+        //setter da chrono -> tenho q ver a sintaxe no docs
+
+        void setJustificativa(string valor){
+            this->justificativa = valor;
+            return;
         }
 
         void encerrarEmprestimo(){
