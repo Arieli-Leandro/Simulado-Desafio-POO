@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <vector>
 using namespace std;
 
 
@@ -125,11 +126,13 @@ class Chave{
 };
 
 //quero fazer uma função que gere um id para que a pessoa não tenha que ficar digitando manualmente
-int contadorUsuario = 0;
-int contadorEmprestimo = 0;
-int contadorChave = 0;
-int contadorAmbiente = 0;
-long geradorId(int cod_id){
+vector<long>incializaVetorRegistros(){
+
+    vector <long> vetorInicializadoFuncao = {0, 0, 0, 0};
+    return vetorInicializadoFuncao;
+}
+
+long geradorId(int cod_id, long registros[]){
 
     //Guia da função geradorID: pelo cod_id ele cai nos casos e gera um id para o respectivo valor de acordo com um contador, e guarda esse contador numa variável
 
@@ -143,6 +146,11 @@ long geradorId(int cod_id){
 
     long valorIdGerado;
 
+    int contadorUsuario = registros[0];
+    int contadorEmprestimo = registros[1];
+    int contadorChave = registros[2];
+    int contadorAmbiente = registros[3];
+
     switch (cod_id){
 
         case 1: // Usuario
@@ -150,24 +158,44 @@ long geradorId(int cod_id){
             contadorUsuario += 1;
             valorIdGerado = contadorUsuario;
 
-
-
+            //Atualiza o valor nos registros
+            registros[0] = contadorUsuario;        
 
         break;
 
         case 2: // Emprestimo
 
+            contadorEmprestimo += 1;
+            valorIdGerado = contadorEmprestimo;
+
+            //atualiza
+            registros[1] = contadorEmprestimo;
+
         break;
 
         case 3: // Chave
+
+            contadorChave += 1;
+            valorIdGerado = contadorChave;
+
+            //atualiza
+            registros[2] = contadorChave;
 
         break;
 
         case 4: //Ambiente
 
+            contadorAmbiente += 1;
+            valorIdGerado = contadorAmbiente;
+
+            //atualiza
+            registros[3] = contadorAmbiente;
+
         break;
 
     }
+
+    return valorIdGerado;
 
 }
 
@@ -253,6 +281,17 @@ class Emprestimo{
 
 
 int main(){
+
+    //inicializa o vetor
+
+    //isso não pode ficar aqui -> Ir pra main ou ir pra global?
+    vector <long> registros = incializaVetorRegistros();
+    /* -> Primeira posição do vetor Referente á Usuarios
+       -> Segunda posição do vetor Referente á Emprestimo
+       -> Terceira posição do vetor Referente á Chave
+       -> Ambiente posição do vetor Referente á Ambiente
+    */
+
 
 
     return 0;
