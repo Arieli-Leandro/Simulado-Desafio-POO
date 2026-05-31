@@ -153,20 +153,6 @@ class Administrador: public Usuario{
         //não tem nada para desalocar
         ~Administrador(){}
 
-        bool podeRetirar(){
-
-            return true;
-
-        }
-
-        void cadastrarChave(){
-
-        }
-
-        void cadastrarUser(){
-
-        }
-
         bool podeRetirar() override {
             return true;
         }
@@ -406,6 +392,7 @@ class Emprestimo{
 
             if(dataDevolucao > dataPrevista){
                 retorno = true;
+                chave->setStatusCodigo(EM_ATRASO);
                 cout << "Devolucao atrasada!" << endl;
             }
 
@@ -418,9 +405,167 @@ class Emprestimo{
 
 
 //Vai ter um método que vai controlar tudo isso
+class GerenciadorDeChaves{
+
+    private:
+        vector<Usuario*> usuarios;
+        vector<Chave*> chaves;
+        vector<Emprestimo*> emprestimos;
+        vector<Ambiente*> ambientes;
+
+    public:
+        //precisamos cadastrar o usuário
+        void cadastraUsuario(Usuario *user){
+
+            usuarios.push_back(user);
+            return;
+
+        }
+
+        void cadastraChave(Chave *chave_u){
+
+            chaves.push_back(chave_u);
+            return;
+
+        }
+
+        void cadastrarAmbiente(Ambiente *amb){
+            ambientes.push_back(amb);
+            return;
+        }
+
+        //A ideia é transformar isso em uma Exception
+        bool verificaUsuarioPodeRetirar(Usuario *user){
+            bool retorno = false;
+
+            if(user->podeRetirar() == true){
+                retorno = true;
+            }
+
+            return retorno;
+        }
+
+        //A ideia é transformar isso em uma Exception
+        bool verificaUsuarioAtivo(Usuario *user){
+            bool retorno = false;
+
+            if(user->getAtivo() == true){
+                retorno = true;
+            }
+            
+            return retorno;
+        }
+
+        //a ideia é depois transformar isso em uma Exception
+        bool verificarChaveDisponivel(Chave *chave){
+            bool retorno = false;
+
+            if(chave->getStatus() == DISPONIVEL){
+                retorno = true;
+            }
+
+            return retorno;
+        }
+
+        void CadastraEmprestimo(Usuario *user, Chave *chave, string justificativa){
+
+            if((verificaUsuarioAtivo(user) == true) && (verificarChaveDisponivel(chave) == true) && (verificaUsuarioAtivo(user) == true)){
+
+                //O que eu preciso fazer?
+                // Preciso realizar um emprestimo usando a classe emprestimo, e preciso colocar esse registro no meu vetor de emprestimos
+                // e preciso atualizar o status da chave
+
+                //1) Realizando o emprestimo
+                //emprestimos.size() + 1 é o id do nosso emprestimo, pq ai ele se refere ao registro do vetor de emprestimos
+                Emprestimo *emp = new Emprestimo((emprestimos.size() +1), user, chave, justificativa);
+
+                //02) Colocando o registro de emprestimo no vetor de emprestimo
+                emprestimos.push_back(emp);
+
+                //03) Atualizando o Status da chave
+                chave->setStatusCodigo(EMPRESTADA);
+                
+            }
+
+        }
+
+        void registraDevolucao(Chave *chave){
+
+            //O que eu preciso fazer?
+            //Encontrar a chave referente desse emprestimo
+            // remover do vetor
+            // colocar a chave em disponivel
+            // não podemos dar um free no ponteiro pq é pra ficar registrado de quando o usuário x pegou a chave y e devolveu hora z
+
+            for(int i = 0; i<emprestimos.size(); i++){
+                if(emprestimos[i]->getChave() == chave){
+
+                    emprestimos[i]->encerrarEmprestimo();
+                    chave->setStatusCodigo(DISPONIVEL);
+
+                    break;
+
+                }
+            }
+
+            return;
+            
+        }
+
+        void exibeChaveDisponivel(){
+
+            cout << "Chaves Disponiveis: " << endl;
+
+            for(int i = 0; i<chaves.size(); i++){
+                if(chaves[i]->getStatus() == DISPONIVEL){
+                    cout << chaves[i] << endl;
+                }
+            }
+
+            return;
+
+        }
+
+        void exibeChaveEmprestada(){
+
+            cout << "Chaves Emprestadas: " << endl;
+
+            for(int i = 0; i<chaves.size(); i++){
+                if(chaves[i]->getStatus() == EMPRESTADA){
+                    cout << chaves[i] << endl;
+                }
+            }
+
+            return;
+
+        }
+
+        void exibeChaveAtrasada(){
+
+            cout << "Chaves Atrasadas: " << endl;
+
+            for(int i = 0; i<chaves.size(); i++){
+                if(chaves[i]->getStatus() == EM_ATRASO){
+                    cout << chaves[i] << endl;
+                }
+            }
+
+            return;
+
+        }
+
+        
+
+};
 
 
 int main(){
+
+    //depois eu preciso fazer a main para testar o código todo
+    // transformar as funções em excessões
+
+    //ver + vídeos de poo e fazer + exercícios e fazer a versão dele em python
+
 
     return 0;
     
