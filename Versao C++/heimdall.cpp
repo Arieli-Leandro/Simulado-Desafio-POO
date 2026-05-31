@@ -1,22 +1,8 @@
-// Bloco de notas de -A -> Fazer tds os getters e setters e dps eu vejo oq eu faço no resto -> Básico -> Médio -> Finaliza
-
 #include <iostream>
 #include <string>
 #include <chrono>
 #include <vector>
 using namespace std;
-/*
--> Estrutura Base
--> Construtores e Destrutores
--> Getters e Setters
--> Interfaces
--> Métodos de Herança e Polimorfos
--> Funcionamento geral (LINKAR AS COISAS [via main? (talvez)])
--> Aplicações
-
-*/
-
-
 
 //getters e setter finalizado
 class Usuario{
@@ -35,7 +21,10 @@ class Usuario{
 
         }
 
-        ~Usuario(){
+        //o destrutor tem que ser virtual pq temos herança
+        virtual ~Usuario(){
+
+            cout << "Usuario:" << nome << "deletado" << endl;
 
         }
 
@@ -86,8 +75,6 @@ class Usuario{
             return ativo;
         }
 
-
-
         bool autenticar(){
 
             //Estou interpretando ativo como se o Usuário esteja empregado ou não na empresa. -> Se ativo: tem acesso -> Se não: não tem acesso
@@ -123,13 +110,17 @@ class Professor: public Usuario{
 
         ~Professor(){
 
+            cout << "Professor:" << "deletado" << endl;
+
         }
 
         //unico método é o override de podeRetirar()
+        bool podeRetirarChave() override {
+            return true;
+        }
+
         int prazoHoras() override {
-
             return 24;
-
         }
 
 
@@ -149,14 +140,17 @@ class Tecnico: public Usuario{
 
         ~Tecnico(){
 
+            cout << "Tecnico: " << "deletado" << endl;
 
         }
 
         //unico método é o override de podeRetirar()
         int prazoHoras() override {
-
             return 8;
+        }
 
+        bool podeRetirarChave() override {
+            return true;
         }
 
 
@@ -175,6 +169,7 @@ class Administrador: public Usuario{
 
         ~Administrador(){
 
+            cout << "Administrador: " << "deletado" << endl;
 
         }
 
@@ -190,7 +185,72 @@ class Administrador: public Usuario{
 
         }
 
+        bool podeRetirarChave() override {
+            return true;
+        }
+
 };
+
+//getter e setter finalizado
+class Ambiente final{
+    //não temos métodos em ambiente
+    private:
+        long id;
+        string nome;
+        string bloco;
+        string descricao;
+    public:
+
+        //Finalizar dps
+        Ambiente(){
+
+        }
+
+        ~Ambiente(){
+            cout << "Ambiente: " << nome << "deletado" << endl;
+        }
+
+        //Métodos setters
+        void setId(long valor){
+            this->id = valor;
+            return;
+        }
+
+        void setNome(string valor_nome){
+            this->nome = valor_nome;
+            return;
+        }
+
+        void setBloco(string valor_bloco){
+            this->bloco = valor_bloco;
+            return;
+        }
+
+        void setDescricao(string valor_descricao){
+            this->descricao = valor_descricao;
+            return;
+        }
+
+        //Métodos getters
+        long getId(){
+            return id;
+        }
+
+        string getNome(){
+            return nome;
+        }
+
+        string getBloco(){
+            return bloco;
+        }
+
+        string getDescricao(){
+            return descricao;
+        }
+
+
+};
+
 
 //status é um atributo de um enum que é o StatusChave
 enum StatusChave {
@@ -207,23 +267,15 @@ class Chave{
         string codigo;
         StatusChave status;
         Ambiente *ambiente;
-
-        //fiz no private porque não é interessante acessar o menu por fora
-        int menu(){
-    
-        }
-
     public:
 
-        //finalizar dps -> DESALOCA NO DESTRUTOR
         Chave(){
 
 
         }
 
         ~Chave(){
-
-
+            cout << "Chave: " << codigo << "deletada" << endl;
         }
 
         //métodos getters
@@ -282,149 +334,7 @@ class Chave{
 
         void exibeChavesCondicao(){
 
-            //vou fazer um menu -> O usuário vai escolher qual condição, e eu vou exibir essa condição
-
         }
-
-        void exibeTodasChaves(){
-
-        }
-
-
-};
-
-//quero fazer uma função que gere um id para que a pessoa não tenha que ficar digitando manualmente
-vector<long>incializaVetorRegistros(){
-
-    vector <long> vetorInicializadoFuncao = {0, 0, 0, 0};
-    return vetorInicializadoFuncao;
-}
-
-long geradorId(int cod_id, long registros[]){
-
-    //Guia da função geradorID: pelo cod_id ele cai nos casos e gera um id para o respectivo valor de acordo com um contador, e guarda esse contador numa variável
-
-    /*Aonde temos id?
-        -> Usuario cod 1
-        -> Emprestimo cod 2
-        -> Chave cod 3
-        -> Ambiente cod 4
-    
-    */
-
-    long valorIdGerado;
-
-    int contadorUsuario = registros[0];
-    int contadorEmprestimo = registros[1];
-    int contadorChave = registros[2];
-    int contadorAmbiente = registros[3];
-
-    switch (cod_id){
-
-        case 1: // Usuario
-
-            contadorUsuario += 1;
-            valorIdGerado = contadorUsuario;
-
-            //Atualiza o valor nos registros
-            registros[0] = contadorUsuario;        
-
-        break;
-
-        case 2: // Emprestimo
-
-            contadorEmprestimo += 1;
-            valorIdGerado = contadorEmprestimo;
-
-            //atualiza
-            registros[1] = contadorEmprestimo;
-
-        break;
-
-        case 3: // Chave
-
-            contadorChave += 1;
-            valorIdGerado = contadorChave;
-
-            //atualiza
-            registros[2] = contadorChave;
-
-        break;
-
-        case 4: //Ambiente
-
-            contadorAmbiente += 1;
-            valorIdGerado = contadorAmbiente;
-
-            //atualiza
-            registros[3] = contadorAmbiente;
-
-        break;
-
-    }
-
-    return valorIdGerado;
-
-}
-
-//getter e setter finalizado
-class Ambiente final{
-    //não temos métodos em ambiente
-    private:
-        long id;
-        string nome;
-        string bloco;
-        string descricao;
-    public:
-
-        //Finalizar dps
-        Ambiente(){
-
-        }
-
-        ~Ambiente(){
-            //ambiente nn tem ponteiro, ent nn precisa desalocar
-
-        }
-
-        //Métodos setters
-        void setId(long valor){
-            this->id = valor;
-            return;
-        }
-
-        void setNome(string valor_nome){
-            this->nome = valor_nome;
-            return;
-        }
-
-        void setBloco(string valor_bloco){
-            this->bloco = valor_bloco;
-            return;
-        }
-
-        void setDescricao(string valor_descricao){
-            this->descricao = valor_descricao;
-            return;
-        }
-
-        //Métodos getters
-        long getId(){
-            return id;
-        }
-
-        string getNome(){
-            return nome;
-        }
-
-        string getBloco(){
-            return bloco;
-        }
-
-        string getDescricao(){
-            return descricao;
-        }
-
 
 };
 
@@ -511,17 +421,6 @@ class Emprestimo{
 
 
 int main(){
-
-    //inicializa o vetor
-    //[isso não pode ficar aqui -> Ir pra main ou ir pra global?]
-    vector <long> registros = incializaVetorRegistros(); // dps tenho q garatir que isso rode apenas 1 vez e dps nunca mais ao longo do código em execução,
-    /* -> Primeira posição do vetor Referente á Usuarios
-       -> Segunda posição do vetor Referente á Emprestimo
-       -> Terceira posição do vetor Referente á Chave
-       -> Ambiente posição do vetor Referente á Ambiente
-    */
-
-
 
     return 0;
     
