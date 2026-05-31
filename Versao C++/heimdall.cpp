@@ -4,7 +4,6 @@
 #include <vector>
 using namespace std;
 
-//getters e setter finalizado
 class Usuario{
 
     protected:
@@ -26,11 +25,8 @@ class Usuario{
         }
 
         //o destrutor tem que ser virtual pq temos herança
-        virtual ~Usuario(){
-
-            cout << "Usuario:" << nome << "deletado" << endl;
-
-        }
+        // não tem nada para desalocar
+        virtual ~Usuario(){}
 
         //Metodos setter's
         void setId(long valor){
@@ -92,7 +88,7 @@ class Usuario{
 
         };
 
-        bool virtual podeRetirarChave() = 0;
+        bool virtual podeRetirar() = 0;
 
         //Esse método virtual é pq professor e tecnico tem prazos diferentes para devolver as chaves
         int virtual prazoHoras() = 0;
@@ -113,7 +109,7 @@ class Professor: public Usuario{
         }
 
         //unico método é o override de podeRetirar()
-        bool podeRetirarChave() override {
+        bool podeRetirar() override {
             return true;
         }
 
@@ -132,16 +128,15 @@ class Tecnico: public Usuario{
 
         Tecnico(long id, string nome, int matricula, string email, bool ativo):Usuario(id, nome,matricula, email, ativo){}
 
-        ~Tecnico(){
-            cout << "Tecnico: " << "deletado" << endl;
-        }
+        //não tem nada para desalocar
+        ~Tecnico(){}
 
         //unico método é o override de podeRetirar()
         int prazoHoras() override {
             return 8;
         }
 
-        bool podeRetirarChave() override {
+        bool podeRetirar() override {
             return true;
         }
 
@@ -155,11 +150,12 @@ class Administrador: public Usuario{
 
         Administrador(long id, string nome, int matricula, string email, bool ativo):Usuario(id,nome,matricula,email,ativo){}
 
-        ~Administrador(){
-            cout << "Administrador: " << "deletado" << endl;
-        }
+        //não tem nada para desalocar
+        ~Administrador(){}
 
         bool podeRetirar(){
+
+            return true;
 
         }
 
@@ -171,7 +167,7 @@ class Administrador: public Usuario{
 
         }
 
-        bool podeRetirarChave() override {
+        bool podeRetirar() override {
             return true;
         }
 
@@ -194,9 +190,7 @@ class Ambiente final{
         }
 
         //não tem nada para desalocar
-        ~Ambiente(){
-            cout << "Ambiente: " << nome << "deletado" << endl;
-        }
+        ~Ambiente(){}
 
         //Métodos setters
         void setId(long valor){
@@ -261,14 +255,18 @@ class Chave{
         Ambiente *ambiente;
     public:
 
-        Chave(){
+        Chave(long id_u, string cod_u, Ambiente *ambiente_u){
 
+            //por que no construtor nn tem status? Porque quando criarmos a chave, ela tem que estar disponível
+            this->id = id_u;
+            this->codigo = cod_u;
+            this->ambiente = ambiente_u;
+
+            status = DISPONIVEL;
 
         }
 
-        ~Chave(){
-            cout << "Chave: " << codigo << "deletada" << endl;
-        }
+        ~Chave(){}
 
         //métodos getters
         long getId(){
@@ -324,10 +322,6 @@ class Chave{
 
         }
 
-        void exibeChavesCondicao(){
-
-        }
-
 };
 
 //métodos getters e setter quase finalizados, falta ver a sintaxe da chrono
@@ -343,15 +337,23 @@ class Emprestimo{
         string justificativa;
     public:
 
-        //finalizar dps -> DESTRUTOR VAI TER Q DESALOCAR PONTEIRO
-        Emprestimo(){
+        Emprestimo(long id_user, Usuario *user, Chave *chave_u, string justi){
+            this->id = id_user;
+            this->usuario = user;
+            this->chave = chave_u;
+            this->justificativa = justi;
 
+            //dataRetirada / dataPrevista / dataDevolucao nn seta eles no construtor, a gnt só inicializa aqui no construtor e a data da devolução vai ser por um método
+            dataRetirada = chrono::system_clock::now();
+
+            //a data prevista é a data da retirada + o tempo que o usuário tem
+            //Tem que pegar o prazo e transformar para horas com o chrono::hours
+            dataPrevista = dataRetirada + chrono::hours(usuario->prazoHoras());
 
         }
 
         ~Emprestimo(){
-
-
+            //Não vamos desalocar nada pq o emprestimo nn é o dono de usuário e nem de chave
         }
 
         //Métodos getters
@@ -367,13 +369,9 @@ class Emprestimo{
             return chave;
         }
 
-        //-> getters do chrono (ver a sintaxe no docs da chrono.h cpp)
-
         string getJustificativa(){
             return justificativa;
         }
-
-
 
         //Métodos setters
         void setId(long valor){
@@ -391,8 +389,6 @@ class Emprestimo{
             return;
         }
 
-        //setter da chrono -> tenho q ver a sintaxe no docs
-
         void setJustificativa(string valor){
             this->justificativa = valor;
             return;
@@ -400,16 +396,28 @@ class Emprestimo{
 
         void encerrarEmprestimo(){
 
+            dataDevolucao = chrono::system_clock::now();
+
         }
 
         bool verificarAtraso(){
 
+            bool retorno = false;
+
+            if(dataDevolucao > dataPrevista){
+                retorno = true;
+                cout << "Devolucao atrasada!" << endl;
+            }
+
+            return retorno;
 
         }
 
 
 };
 
+
+//Vai ter um método que vai controlar tudo isso
 
 
 int main(){
