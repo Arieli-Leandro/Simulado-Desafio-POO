@@ -17,8 +17,12 @@ class Usuario{
     public:
 
         //finalizar o construtor e destrutor dps
-        Usuario(){
-
+        Usuario(long id_user, string nome_user, int matricula_user, string email_user, bool ativo_user){
+            this->id = id_user;
+            this->nome = nome_user;
+            this->matricula = matricula_user;
+            this->email = email_user;
+            this->ativo = ativo_user;
         }
 
         //o destrutor tem que ser virtual pq temos herança
@@ -102,16 +106,10 @@ class Professor: public Usuario{
 
     public:
 
-        //finalizar dps o construtor e o destrutor ->Chamar o super
-        Professor(){
-
-
-        }
+        Professor(long id, string nome, int matricula, string email, bool ativo):Usuario(id,nome,matricula,email,ativo){}
 
         ~Professor(){
-
             cout << "Professor:" << "deletado" << endl;
-
         }
 
         //unico método é o override de podeRetirar()
@@ -132,16 +130,10 @@ class Tecnico: public Usuario{
 
     public:
 
-        //finalizar dps->Chamar o super
-        Tecnico(){
-
-
-        }
+        Tecnico(long id, string nome, int matricula, string email, bool ativo):Usuario(id, nome,matricula, email, ativo){}
 
         ~Tecnico(){
-
             cout << "Tecnico: " << "deletado" << endl;
-
         }
 
         //unico método é o override de podeRetirar()
@@ -161,16 +153,10 @@ class Administrador: public Usuario{
 
     public:
 
-        //finalizar dps -> Chamar o super
-        Administrador(){
-
-
-        }
+        Administrador(long id, string nome, int matricula, string email, bool ativo):Usuario(id,nome,matricula,email,ativo){}
 
         ~Administrador(){
-
             cout << "Administrador: " << "deletado" << endl;
-
         }
 
         bool podeRetirar(){
@@ -191,7 +177,7 @@ class Administrador: public Usuario{
 
 };
 
-//getter e setter finalizado
+//Classe finalizada
 class Ambiente final{
     //não temos métodos em ambiente
     private:
@@ -200,12 +186,14 @@ class Ambiente final{
         string bloco;
         string descricao;
     public:
-
-        //Finalizar dps
-        Ambiente(){
-
+        Ambiente(long id_user, string nome_user, string bloco_user, string descricao_user){
+            this->id = id_user;
+            this->nome = nome_user;
+            this->bloco = bloco_user;
+            this->descricao = descricao_user;
         }
 
+        //não tem nada para desalocar
         ~Ambiente(){
             cout << "Ambiente: " << nome << "deletado" << endl;
         }
@@ -248,7 +236,11 @@ class Ambiente final{
             return descricao;
         }
 
-
+        //só para exibir o Ambiente
+        void exibeAmbiente(){
+            cout << "|ID: " << id << "|Nome: " << nome << "|Bloco: " << bloco << "|Descricao: " << descricao << "|" << endl;
+            return;
+        }
 };
 
 
