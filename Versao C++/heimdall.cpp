@@ -644,17 +644,30 @@ int main(){
     sistema.cadastraUsuario(prof1);
 
     try{
-
         sistema.CadastraEmprestimo(prof1, chave_obj1, "Aula tal");
         cout << "Emprestimo realizado!" << endl;
-
-
     }catch(exception& e){
         cout << e.what() << endl;
     }
 
     sistema.exibeChaveEmprestada();
     sistema.exibeChaveDisponivel();
+
+    //tentando fazer um emprestimo com um professor que não esteja ativo
+    try{
+        sistema.CadastraEmprestimo(prof5, chave_obj2, "Aula tal");
+        cout << "Emprestimo realizado!" << endl;
+    }catch(exception& e){
+        cout << e.what() << endl;
+    }
+
+    //tentando fazer um emprestimo de uma chave já utilizada por outro emprestimo
+    try{
+        sistema.CadastraEmprestimo(prof2, chave_obj1, "Aula tal..");
+        cout << "Emprestimo realizado!" << endl;
+    }catch(exception& e){
+        cout << e.what() << endl;
+    }
 
     sistema.registraDevolucao(chave_obj1);
 
