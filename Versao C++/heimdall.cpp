@@ -403,6 +403,29 @@ class Emprestimo{
 
 };
 
+class ExcecaoChaveIndisponivel: public exception{
+
+    public:
+        const char * what() const noexcept override{
+            return "A chave esta indisponivel!";
+        }
+};
+
+class ExcecaoInativo: public exception{
+
+    public:
+        const char *what() const noexcept override{
+            return "O usuario nao esta ativo!";
+        }
+};
+
+class ExcecaoUsuarioNaoPodeRetirar: public exception{
+    public:
+        const char *what() const noexcept override{
+            return "O usuario nao tem permissao para retirar uma chave!";
+        }
+};
+
 
 //Vai ter um método que vai controlar tudo isso
 class GerenciadorDeChaves{
@@ -440,6 +463,8 @@ class GerenciadorDeChaves{
 
             if(user->podeRetirar() == true){
                 retorno = true;
+            }else{
+                throw ExcecaoUsuarioNaoPodeRetirar();
             }
 
             return retorno;
@@ -451,6 +476,8 @@ class GerenciadorDeChaves{
 
             if(user->getAtivo() == true){
                 retorno = true;
+            }else{
+                throw ExcecaoInativo();
             }
             
             return retorno;
@@ -462,6 +489,8 @@ class GerenciadorDeChaves{
 
             if(chave->getStatus() == DISPONIVEL){
                 retorno = true;
+            }else{
+                throw ExcecaoChaveIndisponivel();
             }
 
             return retorno;
@@ -518,7 +547,7 @@ class GerenciadorDeChaves{
 
             for(int i = 0; i<chaves.size(); i++){
                 if(chaves[i]->getStatus() == DISPONIVEL){
-                    cout << chaves[i] << endl;
+                    cout << chaves[i]->getCodigo() << endl;
                 }
             }
 
@@ -532,7 +561,7 @@ class GerenciadorDeChaves{
 
             for(int i = 0; i<chaves.size(); i++){
                 if(chaves[i]->getStatus() == EMPRESTADA){
-                    cout << chaves[i] << endl;
+                    cout << chaves[i]->getCodigo() << endl;
                 }
             }
 
@@ -546,16 +575,13 @@ class GerenciadorDeChaves{
 
             for(int i = 0; i<chaves.size(); i++){
                 if(chaves[i]->getStatus() == EM_ATRASO){
-                    cout << chaves[i] << endl;
+                    cout << chaves[i]->getCodigo() << endl;
                 }
             }
 
             return;
 
         }
-
-        
-
 };
 
 
@@ -566,6 +592,71 @@ int main(){
 
     //ver + vídeos de poo e fazer + exercícios e fazer a versão dele em python
 
+    // 1a coisa) Quem vai controlar tudo?
+    // Quem vai controlar tudo é a classe gerenciadora, então vamos criar um objeto tipo Gerenciador
+    GerenciadorDeChaves sistema;
+
+    //2a coisa) Para fazer o emprestimo, precisa existir o ambiente (laboratório)
+    //Então vamos criar os ambientes
+
+    //Criei somente o ponteiro 
+    Ambiente* obj1 = new Ambiente(1, "Lab 01", "N", "Laboratorio Padrao 01");
+    Ambiente* obj2 = new Ambiente(2, "Lab 02", "N", "Laboratorio Padrao 02");
+    Ambiente* obj3 = new Ambiente(3, "Lab 03", "N", "Laboratorio Padrao 03");
+    Ambiente* obj4 = new Ambiente(4, "Lab 04", "N", "Laboratorio Padrao 04");
+    Ambiente* obj5 = new Ambiente(5, "Lab 05", "N", "Laboratorio Padrao 05");
+    Ambiente* obj6 = new Ambiente(6, "Lab 06", "N", "Laboratorio Padrao 06");
+
+    //Como só criei o ponteiro, agora preciso associar ele ao sistema
+    sistema.cadastrarAmbiente(obj1);
+    sistema.cadastrarAmbiente(obj2);
+    sistema.cadastrarAmbiente(obj3);
+    sistema.cadastrarAmbiente(obj4);
+    sistema.cadastrarAmbiente(obj5);
+    sistema.cadastrarAmbiente(obj6);
+
+    //3a coisa) Já tenho um ambiente, pela regra de negócio 1 ambiente está associado a 1 chave
+    //Então agora eu preciso criar a chave que linke o ambiente com a chave
+
+    Chave * chave_obj1 = new Chave(1, "Lab01", obj1);
+    Chave * chave_obj2 = new Chave(2, "Lab02", obj2);
+    Chave * chave_obj3 = new Chave(3, "Lab03", obj3);
+    Chave * chave_obj4 = new Chave(4, "Lab04", obj4);
+    Chave * chave_obj5 = new Chave(5, "Lab05", obj5);
+    Chave * chave_obj6 = new Chave(6, "Lab06", obj6);
+
+    //dnv como só criei o ponteiro, tenho que mandar para o sistema
+    sistema.cadastraChave(chave_obj1);
+    sistema.cadastraChave(chave_obj2);
+    sistema.cadastraChave(chave_obj3);
+    sistema.cadastraChave(chave_obj4);
+    sistema.cadastraChave(chave_obj5);
+    sistema.cadastraChave(chave_obj6);
+
+    //4a coisa) Já tenho ambiente e chave, mas ainda preciso de professores
+    //Então agr eu preciso criar o ponteiro de um obj do tipo Professor, e dps mandar para o gerenciador do sistema
+    Usuario* prof1 = new Professor(1, "Prof1", 1, "email.com", true);
+    Usuario* prof2 = new Professor(2, "Prof2", 2, "email.com", true);
+    Usuario* prof3 = new Professor(3, "Prof3", 3, "email.com", true);
+    Usuario* prof4 = new Professor(4, "Prof4", 4, "email.com", true);
+    Usuario* prof5 = new Professor(5, "Prof5", 5, "email.com", false);
+
+    sistema.cadastraUsuario(prof1);
+
+    try{
+
+        sistema.CadastraEmprestimo(prof1, chave_obj1, "Aula tal");
+        cout << "Emprestimo realizado!" << endl;
+
+
+    }catch(exception& e){
+        cout << e.what() << endl;
+    }
+
+    sistema.exibeChaveEmprestada();
+    sistema.exibeChaveDisponivel();
+
+    sistema.registraDevolucao(chave_obj1);
 
     return 0;
     
