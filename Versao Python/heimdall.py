@@ -59,7 +59,35 @@ class Usuario:
         return False
     
         
+#Classe Professor -> Herda de Usuário
+class Professor(Usuario):
+    def __init__(self, id_u, nome_u, matricula_u, email_u, ativo_u):
+        super().__init__(id_u, nome_u, matricula_u, email_u, ativo_u)
 
+    def podeRetirar(self):
+        return True
+
+#Classe Tecnico -> Herda de Usuário
+class Tecnico(Usuario):
+    def __init__(self, id_u, nome_u, matricula_u, email_u, ativo_u):
+        super().__init__(id_u, nome_u, matricula_u, email_u, ativo_u)
+
+    def podeRetirar(self):
+        return True
+    
+#Classe Administrador -> Herda de Usuário mas ela tem métodos adicionais como (Cadastrar Chave e CadastrarUser)
+class Administrador(Usuario):
+    def __init__(self, id_u, nome_u, matricula_u, email_u, ativo_u):
+        super().__init__(id_u, nome_u, matricula_u, email_u, ativo_u)
+
+    def podeRetirar(self):
+        return True
+    
+    def cadastrarChave(self):
+        pass
+
+    def cadastrarUsuario(self):
+        pass
 
 
 
