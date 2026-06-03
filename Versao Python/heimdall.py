@@ -198,13 +198,13 @@ class Administrador(Usuario):
         GerenciadorDeSistemaHeimdall.cadastrarUsuario(usuario)
         return
 
-    def gerarRelatorio(self):
+    def gerarRelatorio(self,sistema):
         #Pega o vetor de registros e cria um arquivo com ele
-        lista_registros = GerenciadorDeSistemaHeimdall._retornaVetorRegistros()
+        lista_registros = sistema._retornaVetorRegistros()
 
         with open("Relatorio.txt", "w", encoding="utf-8") as arq:
-            for i in lista_registros:
-                arq.write(i)
+            for registro in lista_registros:
+                arq.write("|ID: " + str(registro.getId()) + "|Usuário: " + str(registro.getUsuario().getNome()) + "|Chave: " + str(registro.getChave().getCodigo()) + "|Data Retirada: " + str(registro.getDataRetirada()) + "|Data Prevista: " + str(registro.getDataPrevista()) + "|Data Devolução: " + str(registro.getDataDevolucao()) + "|Justificativa: " + str(registro.getJustificativa()) + "|")
 
         return
 
@@ -673,6 +673,8 @@ if __name__ == "__main__":
         print("Empréstimo realizado com sucesso!")
 
         sistema.exibeChavesEmprestadas()
+
+        admin.gerarRelatorio(sistema)
 
         sistema.registraDevolucao(chave_lab)
 
