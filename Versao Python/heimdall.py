@@ -338,7 +338,7 @@ class GerenciadorDeSistemaHeimdall:
         return
 
     def deletarChave(self, chave):
-        if(self._verificaSeAmbienteExiste(chave) == True):
+        if(self._verificaSeChaveExiste(chave) == True):
 
             for indice, x in enumerate(self._lista_chaves):
                 if(x == chave):
@@ -348,38 +348,141 @@ class GerenciadorDeSistemaHeimdall:
         else:
             print("Para deletar uma chave, o cadastro dela tem que existir!")
 
-    def cadastrarAmbiente(self):
-        pass
+        return
 
-    def deletarAmbiente(self):
-        pass
+    def cadastrarAmbiente(self, ambiente):
+        if(self._verificaSeAmbienteExiste(ambiente) == False):
+            self._lista_ambientes.append(ambiente)
+        else:
+            print("O ambiente já existe!")
 
-    def verificaUsuarioPodeRetirar(self):
-        pass
+        return
+        
 
-    def verificaChaveDisponivel(self):
-        pass
+    #Transformar o else em Exception
+    def deletarAmbiente(self, ambiente):
+        if(self._verificaSeAmbienteExiste(ambiente) == True):
 
-    def verificaUsuarioAtivo(self):
-        pass
+            for indice, x in enumerate(self._lista_ambientes):
+                if(x == ambiente):
+                    self._lista_ambientes.pop(indice)
+                    del ambiente
+                    break
+        else:
+            print("Para deletar um ambiente, ele precisa estar cadastrado!")
 
-    def cadastraEmprestimo(self):
-        pass
+        return
 
-    def registraDevolucao(self):
-        pass
+    #Transformar o else em Exception
+    def _verificaUsuarioPodeRetirar(self, usuario):
+
+        retorno = False
+
+        if(usuario.podeRetirar() == True):
+            retorno = True
+        else:
+            print(f"O Usuário: {usuario.getNome()} não pode retirar uma chave!")
+
+        return retorno
+
+    #Transformar o else em Exception
+    def _verificaChaveDisponivel(self, chave):
+        
+        retorno = False
+
+        if(chave.getStatus() == StatusChave.DISPONIVEL):
+            retorno = True
+        else:
+            print("Chave não está disponível!")
+
+        return retorno
+    
+    #Transformar o else em Exception
+    def _verificaUsuarioAtivo(self, usuario):
+        
+        retorno = False
+
+        if(usuario.getAtivo() == True):
+            retorno = True
+        else:
+            print("O Usuário não está ativo!")
+
+        return retorno
+
+    #Transformar o else em Exception
+    def cadastraEmprestimo(self, usuario, chave, justificativa):
+
+        #Preciso verificar se o usuário está ativo
+        #Preciso verificar se o usuário podeRetirar
+        #Preciso verificar se a chave está disponível
+
+        #Preciso calcular o indice que vai ser o id
+        #Preciso criar o objeto do tipo Emprestimo
+        #Preciso dar append na lista de registro
+        #Preciso acessar e mudar o estado da chave
+
+        if((self._verificaUsuarioAtivo(usuario) == True) and (self._verificaUsuarioAtivo(usuario) == True) and (self._verificaChaveDisponivel(chave) == True)):
+            
+            indice_id = len(self._lista_emprestimos)
+            obj = Emprestimo(indice_id, usuario,chave, justificativa)
+            
+            #Append na lista de registros
+            self._lista_emprestimos.append(obj)
+        
+            #Acessando e mudando o estado da chave
+            chave.setStatus(StatusChave.EMPRESTADA)
+        else:
+            pass
+
+        return
+        
+
+    def registraDevolucao(self, chave):
+        
+        #-> Muda o estado da chave para disponivel novamente
+        for emprestimo in self._lista_emprestimos:
+            #Significa que achei a chave referente
+            if(emprestimo.getChave() == chave):
+                #Encerro o emprestimo dessa chave X
+                emprestimo.encerrarEmprestimo()
+
+                #Mudo o estado da chave X para disponivel
+                chave.setStatus(StatusChave.DISPONIVEL)
+                break
+
+        return
 
     def exibeChavesDisponiveis(self):
-        pass
+        
+        for chave in self._lista_chaves:
+            if(chave.getStatus() == StatusChave.DISPONIVEL):
+                print(f"|Chave Disponível: {chave.getCodigo()}|")
+
+        return
 
     def exibeChavesEmprestadas(self):
-        pass
+        
+        for chave in self._lista_chaves:
+            if(chave.getStatus() == StatusChave.EMPRESTADA):
+                print(f"|Chave Emprestada: {chave.getCodigo()}|")
+
+        return
 
     def exibeChavesEmAtraso(self):
-        pass
+        
+        for chave in self._lista_chaves:
+            if(chave.getStatus() == StatusChave.EM_ATRASO):
+                print(f"|Chave Em Atraso: {chave.getCodigo()}|")
 
+        return
+
+    #Transformar o else em Exception
     def exibeTodasChaves(self):
-        pass
+        
+        for i in self._lista_chaves:
+            print(i)
+
+        return
 
 if __name__ == "__main__":
     pass
