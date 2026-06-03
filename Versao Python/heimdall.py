@@ -59,6 +59,11 @@ class ExcessaoDevolucaoNaoEncontrada(Exception):
 
     def __str__(self):
         return f"Registro de Emprestimo não encontrado, não foi possível realizar devolução!"
+    
+class ExcessaoStatusInvalido(Exception):
+
+    def __str__(self):
+        return f"O status recebido é inválido!"
 
 
 # =-- Classes --=
@@ -179,17 +184,29 @@ class Administrador(Usuario):
     def podeRetirar(self):
         return True
     
-    def cadastrarChave(self):
+    def prazoHoras(self):
+        return 12
+    
+    def cadastrarChave(self, chave):
         #Chama o sistema Heimdall
-        pass
+        GerenciadorDeSistemaHeimdall.cadastrarChave(chave)
+        return
+        
 
-    def cadastrarUsuario(self):
+    def cadastrarUsuario(self, usuario):
         #Chama o sistema Heimdall
-        pass
+        GerenciadorDeSistemaHeimdall.cadastrarUsuario(usuario)
+        return
 
     def gerarRelatorio(self):
         #Pega o vetor de registros e cria um arquivo com ele
-        pass
+        lista_registros = GerenciadorDeSistemaHeimdall._retornaVetorRegistros()
+
+        with open("Relatorio.txt", "w", encoding="utf-8") as arq:
+            for i in lista_registros:
+                arq.write(i)
+
+        return
 
 #Classe Emprestimo
 class Emprestimo:
@@ -199,10 +216,10 @@ class Emprestimo:
         self._usuario = usuario
         self._chave = chave_u
 
-        self._dataRetirada = datetime.time()
+        self._dataRetirada = datetime.datetime.now()
         horas_usuario = usuario.prazoHoras()
-        self._dataPrevista =  self._dataPrevista + timedelta(hours=horas_usuario)
-        self._dataDevolucao
+        self._dataPrevista =  self._dataRetirada + timedelta(hours=horas_usuario)
+        self._dataDevolucao = None
 
         self._justificativa = justificativa
 
@@ -259,7 +276,9 @@ class Emprestimo:
     #Métodos da classe
     def encerrarEmprestimo(self):
 
-        self._dataDevolucao = datetime.time()
+        self._dataDevolucao = datetime.datetime.now()
+
+        return
 
     def verificaAtraso(self):
 
@@ -321,11 +340,14 @@ class Chave:
     
     def setStatus(self, status):
         #A ideia é lançar um erro aqui se não foi do tipo StatusChave
-        #Depois fazer uma classe de erro para chave inválida
-        if isinstance(status, StatusChave):
-            raise TypeError("Tipo de chave inválida!")
-        
-        self._status = status
+        #Depois fazer uma classe de erro para chave inválida      
+
+        if((status != StatusChave.DISPONIVEL) and (status != StatusChave.EMPRESTADA) and (status != StatusChave.EM_ATRASO)):
+            raise ExcessaoStatusInvalido()
+        else:
+            self._status = status
+
+        return
 
     #Métodos da Classe
     def verificaChaveDisponivel(self, chave):
@@ -545,7 +567,7 @@ class GerenciadorDeSistemaHeimdall:
         #Preciso dar append na lista de registro
         #Preciso acessar e mudar o estado da chave
 
-        if((self._verificaUsuarioAtivo(usuario) == True) and (self._verificaUsuarioAtivo(usuario) == True) and (self._verificaChaveDisponivel(chave) == True)):
+        if((self._verificaUsuarioAtivo(usuario) == True) and (self._verificaUsuarioPodeRetirar(usuario) == True) and (self._verificaChaveDisponivel(chave) == True)):
             
             indice_id = len(self._lista_emprestimos)
             obj = Emprestimo(indice_id, usuario,chave, justificativa)
@@ -616,6 +638,46 @@ class GerenciadorDeSistemaHeimdall:
             print(i)
 
         return
+    
+    #A ideia é que essa função tenha conexão com o gerarRelatório do Adm
+    def _retornaVetorRegistros(self):
+        return self._lista_emprestimos
 
 if __name__ == "__main__":
-    pass
+
+    try:
+        sistema = GerenciadorDeSistemaHeimdall()
+
+        laboratorio = Ambiente(1,"Laboratório de Informática","Bloco A","Laboratório com computadores")
+
+        sistema.cadastrarAmbiente(laboratorio)
+
+        chave_lab = Chave(1,"LAB-001",laboratorio)
+
+        sistema.cadastrarChave(chave_lab)
+
+        professor = Professor(1,"Carlos Silva","12345","carlos@ifpr.edu.br",True)
+
+        tecnico = Tecnico(2,"Maria Souza","54321","maria@ifpr.edu.br",True)
+
+        admin = Administrador(3,"João Admin","99999","admin@ifpr.edu.br",True)
+
+        sistema.cadastrarUsuario(professor)
+        sistema.cadastrarUsuario(tecnico)
+        sistema.cadastrarUsuario(admin)
+
+        sistema.exibeChavesDisponiveis()
+
+        sistema.cadastraEmprestimo(professor,chave_lab,"Aula de Programação Orientada a Objetos")
+
+        print("Empréstimo realizado com sucesso!")
+
+        sistema.exibeChavesEmprestadas()
+
+        sistema.registraDevolucao(chave_lab)
+
+        print("Devolução realizada com sucesso!")
+
+        sistema.exibeChavesDisponiveis()
+    except Exception as erro:
+        print(erro)
