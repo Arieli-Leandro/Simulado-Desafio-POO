@@ -274,6 +274,111 @@ class Ambiente:
 
 class GerenciadorDeSistemaHeimdall:
     def __init__(self):
+        self._lista_usuarios = []
+        self._lista_chaves = []
+        self._lista_emprestimos = []
+        self._lista_ambientes = []
+
+    def _verificaSeUsuarioExiste(self, usuario):
+        retorno = False
+
+        for i in self._lista_usuarios:
+            if(i == usuario):
+                retorno = True
+                break
+
+        return retorno
+    
+    def _verificaSeChaveExiste(self, chave):
+        
+        retorno = False
+
+        for i in self._lista_chaves:
+            if(i == chave):
+                retorno = True
+                break
+
+        return retorno
+
+    def _verificaSeAmbienteExiste(self, ambiente):
+        
+        retorno = False
+
+        for i in self._lista_ambientes:
+            if(i == ambiente):
+                retorno = True
+                break
+
+        return retorno
+
+    def cadastrarUsuario(self, usuario):
+        if(self._verificaSeUsuarioExiste(usuario) == False):
+            self._lista_usuarios.append(usuario)
+        else:
+            print("O usuário já existe!")
+        return
+
+    def deletarUsuario(self, usuario):
+        if(self._verificaSeUsuarioExiste(usuario) == True):
+            #encontra o indide, tira da lista e depois deleta o obj
+            for indice, x in enumerate(self._lista_usuarios):
+                if(x == usuario):
+                    self._lista_usuarios.pop(indice)
+                    del usuario
+                    break
+        else:
+            print("Para deletar um usuário o cadastro dele tem que existir!")
+
+    def cadastrarChave(self, chave):
+        if(self._verificaSeChaveExiste(chave) == False):
+            self._lista_chaves.append(chave)
+        else:
+            print("A chave já está cadastrada!")
+
+        return
+
+    def deletarChave(self, chave):
+        if(self._verificaSeAmbienteExiste(chave) == True):
+
+            for indice, x in enumerate(self._lista_chaves):
+                if(x == chave):
+                    self._lista_chaves.pop(indice)
+                    del chave
+                    break
+        else:
+            print("Para deletar uma chave, o cadastro dela tem que existir!")
+
+    def cadastrarAmbiente(self):
+        pass
+
+    def deletarAmbiente(self):
+        pass
+
+    def verificaUsuarioPodeRetirar(self):
+        pass
+
+    def verificaChaveDisponivel(self):
+        pass
+
+    def verificaUsuarioAtivo(self):
+        pass
+
+    def cadastraEmprestimo(self):
+        pass
+
+    def registraDevolucao(self):
+        pass
+
+    def exibeChavesDisponiveis(self):
+        pass
+
+    def exibeChavesEmprestadas(self):
+        pass
+
+    def exibeChavesEmAtraso(self):
+        pass
+
+    def exibeTodasChaves(self):
         pass
 
 if __name__ == "__main__":
