@@ -3,9 +3,6 @@ from datetime import timedelta
 from abc import ABC, abstractmethod
 from enum import Enum
 
-# Nesse sistema O usuário pode pegar +1 chave
-
-
 # =- Excessões -=
 
 class ExcessaoUsuarioInativo(Exception):
