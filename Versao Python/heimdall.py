@@ -3,6 +3,9 @@ from datetime import timedelta
 from abc import ABC, abstractmethod
 from enum import Enum
 
+# Nesse sistema O usuário pode pegar +1 chave
+
+
 # =- Excessões -=
 
 class ExcessaoUsuarioInativo(Exception):
@@ -64,6 +67,11 @@ class ExcessaoStatusInvalido(Exception):
 
     def __str__(self):
         return f"O status recebido é inválido!"
+    
+class ExcessaoUsuarioUsuarioJaTemChave(Exception):
+
+    def __str__(self):
+        return f"O Usuário já pegou uma chave!"
 
 
 # =-- Classes --=
@@ -77,6 +85,7 @@ class Usuario(ABC):
         self._matricula = matricula_u
         self._email = email_u
         self._ativo = ativo_u
+        self._pegouChave = False
 
     #Métodos getters
     def getId(self):
@@ -98,6 +107,10 @@ class Usuario(ABC):
     def getAtivo(self):
 
         return self._ativo
+    
+    def getPegouChave(self):
+
+        return self._pegouChave
 
     #Métodos setters
     def setId(self, id_u):
@@ -124,6 +137,9 @@ class Usuario(ABC):
 
         self._ativo = ativo
         return
+    
+    def setPegouChave(self, estado):
+        self._pegouChave = estado
 
     #Métodos específicos da classe
     def autenticar(self):
@@ -143,8 +159,6 @@ class Usuario(ABC):
     def prazoHoras(self):
 
         return 0
-        
-    
         
 #Classe Professor -> Herda de Usuário
 class Professor(Usuario):
@@ -205,6 +219,8 @@ class Administrador(Usuario):
         with open("Relatorio.txt", "w", encoding="utf-8") as arq:
             for registro in lista_registros:
                 arq.write("|ID: " + str(registro.getId()) + "|Usuário: " + str(registro.getUsuario().getNome()) + "|Chave: " + str(registro.getChave().getCodigo()) + "|Data Retirada: " + str(registro.getDataRetirada()) + "|Data Prevista: " + str(registro.getDataPrevista()) + "|Data Devolução: " + str(registro.getDataDevolucao()) + "|Justificativa: " + str(registro.getJustificativa()) + "|")
+
+            print(f"O Usuário: {self.getNome()} gerou um relatório!")
 
         return
 
@@ -554,6 +570,15 @@ class GerenciadorDeSistemaHeimdall:
             raise ExcessaoUsuarioInativo()
 
         return retorno
+    
+    def _verificaUsuarioPegouChave(self, usuario):
+
+        retorno = False #Retorna false pq significa que ele nn pode pegar uma nova chave
+
+        if(usuario.getPegouChave() == False):
+            retorno = True #Retorna True pq significa que ele pode pegar uma nova chave
+        else:
+            raise ExcessaoUsuarioUsuarioJaTemChave()
 
     #Transformar o else em Exception
     def cadastraEmprestimo(self, usuario, chave, justificativa):
@@ -561,13 +586,15 @@ class GerenciadorDeSistemaHeimdall:
         #Preciso verificar se o usuário está ativo
         #Preciso verificar se o usuário podeRetirar
         #Preciso verificar se a chave está disponível
+        #Preciso verificar se o usuário já está com alguma chave
 
         #Preciso calcular o indice que vai ser o id
         #Preciso criar o objeto do tipo Emprestimo
         #Preciso dar append na lista de registro
         #Preciso acessar e mudar o estado da chave
+        #Seta a variável pegouChave de Usuário para True (Significa que ele está atualmente com uma chave)
 
-        if((self._verificaUsuarioAtivo(usuario) == True) and (self._verificaUsuarioPodeRetirar(usuario) == True) and (self._verificaChaveDisponivel(chave) == True)):
+        if((self._verificaUsuarioAtivo(usuario) == True) and (self._verificaUsuarioPodeRetirar(usuario) == True) and (self._verificaChaveDisponivel(chave) == True) and (self._verificaUsuarioPegouChave(usuario) == True)):
             
             indice_id = len(self._lista_emprestimos)
             obj = Emprestimo(indice_id, usuario,chave, justificativa)
@@ -577,6 +604,7 @@ class GerenciadorDeSistemaHeimdall:
         
             #Acessando e mudando o estado da chave
             chave.setStatus(StatusChave.EMPRESTADA)
+            usuario.setPegouChave(True)
         else:
             raise ExcessaoEmprestimoInvalido()
 
@@ -589,6 +617,7 @@ class GerenciadorDeSistemaHeimdall:
         verificador = -1
         
         #-> Muda o estado da chave para disponivel novamente
+        #-> Muda o estado de PegouChave, para deixar o usuário pegar outra chave depois
         for emprestimo in self._lista_emprestimos:
             #Significa que achei a chave referente
             if(emprestimo.getChave() == chave):
@@ -600,6 +629,9 @@ class GerenciadorDeSistemaHeimdall:
 
                 #Mudo o estado da chave X para disponivel
                 chave.setStatus(StatusChave.DISPONIVEL)
+
+                emprestimo.getUsuario().setPegouChave(False)
+
                 break
 
         if(verificador == -1):
@@ -649,18 +681,20 @@ if __name__ == "__main__":
         sistema = GerenciadorDeSistemaHeimdall()
 
         laboratorio = Ambiente(1,"Laboratório de Informática","Bloco A","Laboratório com computadores")
+        laboratorio2 = Ambiente(2,"Laboratório de Informática","Bloco C","Laboratório com computadores")
 
         sistema.cadastrarAmbiente(laboratorio)
 
         chave_lab = Chave(1,"LAB-001",laboratorio)
+        chave_lab2 = Chave(2,"LAB-002",laboratorio2)
 
         sistema.cadastrarChave(chave_lab)
 
-        professor = Professor(1,"Carlos Silva","12345","carlos@ifpr.edu.br",True)
+        professor = Professor(1,"Mariana Silva","12345","mariana@ifpr.edu.br",True)
 
         tecnico = Tecnico(2,"Maria Souza","54321","maria@ifpr.edu.br",True)
 
-        admin = Administrador(3,"João Admin","99999","admin@ifpr.edu.br",True)
+        admin = Administrador(3,"João","99999","admin@ifpr.edu.br",True)
 
         sistema.cadastrarUsuario(professor)
         sistema.cadastrarUsuario(tecnico)
@@ -677,6 +711,10 @@ if __name__ == "__main__":
         admin.gerarRelatorio(sistema)
 
         sistema.registraDevolucao(chave_lab)
+
+        #Tentando fazer 1 msm usuário pegar outra chave (Deu certo :D, o sistema nn deixou isso acontecer) 
+        sistema.cadastraEmprestimo(professor,chave_lab2,"Aula de tal coisa")
+
 
         print("Devolução realizada com sucesso!")
 
